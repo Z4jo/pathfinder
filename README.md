@@ -5,6 +5,6 @@ Jedná se o aplikaci, která hledá nejkratší cestu od StartNode k FinishNode,
 2.A* search algorithm
 
 
-##Inspirace
-https://clementmihailescu.github.io/Pathfinding-Visualizer/
+## Inspirace
+https://clementmihailescu.github.io/Pathfinding-Visualizer/ /n
 https://qiao.github.io/PathFinding.js/visual/
