@@ -3,6 +3,7 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Snackbar from '@mui/material/Snackbar';
 import MUIAlert from '@mui/material/Alert';
+import TextField from '@mui/material/TextField';
 //MUI imports
 import React from 'react';
 import Node from './Node/Node';
@@ -20,12 +21,19 @@ const FINISH_NODE_ROW = 17;
 const FINISH_NODE_COL = 25;
 
  function Pathfinder(){
-
     const [matrix,setMatrix]=React.useState([]);
-    
-    const [open, setOpen] = React.useState(false);
+    const [startNodeRow,setStartNodeRow]=React.useState(10);
+    const [startNodeCol,setStartNodeCol]=React.useState(10);
+    const [finishNodeRow,setFinishNodeRow]=React.useState(10);
+    const [finishNodeCol,setFinishNodeCol]=React.useState(60);
 
-    const handleOpen = () => {
+    const [open, setOpen] = React.useState(false);
+    const [alertText, setAlertText] = React.useState("Default text");
+    const [severity, setSeverity] = React.useState("warning");
+
+    const handleOpen = (alertText,severity) => {
+        setAlertText(alertText);
+        setSeverity(severity);
         setOpen(true);
     };
 
@@ -57,8 +65,8 @@ const FINISH_NODE_COL = 25;
         return {
             col,
             row,
-            isStart:col==START_NODE_COL && row==START_NODE_ROW,
-            isFinish:col==FINISH_NODE_COL&&row==FINISH_NODE_ROW,
+            isStart:col==startNodeCol && row==startNodeRow,
+            isFinish:col==finishNodeCol&&row==finishNodeRow,
             isWall:false,
             isVisited:false,
             distance:Infinity,
@@ -95,14 +103,14 @@ const FINISH_NODE_COL = 25;
 
       //ALGO CALLS
     const handleDijkstra = ((event)=>{
-       const visitedNodes= djikstra(matrix,matrix[START_NODE_ROW][START_NODE_COL],matrix[FINISH_NODE_ROW][FINISH_NODE_COL])
+       const visitedNodes= djikstra(matrix,matrix[startNodeRow][startNodeCol],matrix[finishNodeRow][finishNodeCol])
        const node=visitedNodes[visitedNodes.length-1];
        if(node.isFinish==true){
         const shortestPath=getShortestPath(node);
         animateAlgo(visitedNodes,shortestPath); 
        }else{
         
-        handleOpen();
+        handleOpen("Couldnt find way to end node","warning");
         console.log("NO WAY OUT")
        }
       
@@ -114,13 +122,13 @@ const FINISH_NODE_COL = 25;
             node.isVisited=false;
             node.previousNode=null;
         });
-        const visitedNodes=aSearch(matrix,matrix[START_NODE_ROW][START_NODE_COL],matrix[FINISH_NODE_ROW][FINISH_NODE_COL])
+        const visitedNodes=aSearch(matrix,matrix[startNodeRow][startNodeCol],matrix[finishNodeRow][finishNodeCol])
         const node=visitedNodes[visitedNodes.length-1];  
         if(node.isFinish==true){
             const shortestPath=getShortestPathAsearch(node);
              animateAlgo(visitedNodes,shortestPath); 
             }else{
-                handleOpen();
+                handleOpen("Couldnt find way to end node","warning");
              console.log("NO WAY OUT")
             }
     })
@@ -161,6 +169,35 @@ const FINISH_NODE_COL = 25;
             
         }   
     })
+
+
+    const handleStartNodeCol = ((event)=>{
+        if(event.target.value>0&&event.target.value<80){
+            setStartNodeCol(event.target.value);
+        }else{
+
+        }
+        
+    })
+
+    const handleStartNodeRow = ((event)=>{
+        if(event.target.value>0&&event.target.value<20){
+            setStartNodeRow(event.target.value);
+        }else{
+
+        }
+    })
+
+    const handleFinishNodeCol = ((event)=>{
+        if(event.target.value>0&&event.target.value<80){
+            setFinishNodeCol(event.target.value);
+        }
+    })
+    const handleFinishNodeRow = ((event)=>{
+        if(event.target.value>0&&event.target.value<20){
+            setFinishNodeRow(event.target.value);
+        }
+    })
     return (
         <>
         <Stack direction="row" spacing={2} pt={1} pl={1}>
@@ -168,10 +205,14 @@ const FINISH_NODE_COL = 25;
             <Button variant="outlined" onClick={handleAsearch}>A* algo</Button>
             <Button variant="outlined" onClick={handleClearMatrix}>Clear the grid</Button>
             <Button variant="outlined" onClick={handleClearHalfMatrix}>Clear the animation</Button>
+            <TextField id="start-node-col" label={startNodeCol} variant="outlined" onChange={handleStartNodeCol}/>
+            <TextField id="start-node-row" label={startNodeRow} variant="outlined" onChange={handleStartNodeRow}/>
+            <TextField id="finish-node-col" label={finishNodeCol} variant="outlined" onChange={handleFinishNodeCol}/>
+            <TextField id="finish-node-row" label={finishNodeRow} variant="outlined" onChange={handleFinishNodeRow}/>
         </Stack>
         <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-            <MUIAlert onClose={handleClose} severity="warning" sx={{ width: '100%' }}>
-                There is now way to finish node!!
+            <MUIAlert onClose={handleClose} severity={severity} sx={{ width: '100%' }}>
+                {alertText}
             </MUIAlert>
         </Snackbar>
         <div className="grid" >
