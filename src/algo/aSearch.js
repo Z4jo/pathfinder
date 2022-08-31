@@ -2,7 +2,6 @@ export function aSearch(matrix,startingNode,finishNode){
 
     const openList= [];
     const closedList=[];
-    
     var currentNode=startingNode;
     currentNode.distance=0;
     openList.push(currentNode);

@@ -10,10 +10,7 @@ import Node from './Node/Node';
 import './Pathfinder.css'
 import { djikstra, getShortestPath } from '../algo/dijikstra';
 import {aSearch, getShortestPathAsearch} from '../algo/aSearch';
-
-
-
-
+import { randomizePrim } from '../algo/randomizePrim';
 
 
  function Pathfinder(){
@@ -99,25 +96,48 @@ import {aSearch, getShortestPathAsearch} from '../algo/aSearch';
 
       //ALGO CALLS
     const handleDijkstra = ((event)=>{
-       const visitedNodes= djikstra(matrix,matrix[startNodeRow][startNodeCol],matrix[finishNodeRow][finishNodeCol])
+        var newMatrix=matrix;
+        for (let i = 0; i < matrix.length; i++) {
+            for (let j = 0; j < matrix[0].length; j++) {          
+                const newNode={
+                    ...matrix[i][j],
+                    isVisited:false,
+                    previousNode:null,
+                    distance:Infinity,
+                }
+                newMatrix[i][j]=newNode;
+            } 
+        }  
+        setMatrix(newMatrix);
+
+        const visitedNodes= djikstra(newMatrix,matrix[startNodeRow][startNodeCol],matrix[finishNodeRow][finishNodeCol])
        const node=visitedNodes[visitedNodes.length-1];
        if(node.isFinish==true){
         const shortestPath=getShortestPath(node);
         animateAlgo(visitedNodes,shortestPath); 
-       }else{
-        
-        handleOpen("Couldnt find way to end node","warning");
-        console.log("NO WAY OUT")
+       }else{       
+            handleOpen("Couldnt find way to end node","warning");
+            console.log("NO WAY OUT")
        }
       
     })
 
 
     const handleAsearch= ((event)=>{
-        matrix.forEach(node => {
-            node.isVisited=false;
-            node.previousNode=null;
-        });
+        var newMatrix=matrix;
+        for (let i = 0; i < matrix.length; i++) {
+            for (let j = 0; j < matrix[0].length; j++) {          
+                const newNode={
+                    ...matrix[i][j],
+                    isVisited:false,
+                    previousNode:null,
+                    distance:Infinity,
+                }
+                newMatrix[i][j]=newNode;
+            } 
+        }  
+        setMatrix(newMatrix);
+        console.log(matrix);
         const visitedNodes=aSearch(matrix,matrix[startNodeRow][startNodeCol],matrix[finishNodeRow][finishNodeCol])
         const node=visitedNodes[visitedNodes.length-1];  
         if(node.isFinish==true){
@@ -125,7 +145,7 @@ import {aSearch, getShortestPathAsearch} from '../algo/aSearch';
              animateAlgo(visitedNodes,shortestPath); 
             }else{
                 handleOpen("Couldnt find way to end node","warning");
-             console.log("NO WAY OUT")
+                console.log("NO WAY OUT")
             }
     })
     
@@ -141,7 +161,6 @@ import {aSearch, getShortestPathAsearch} from '../algo/aSearch';
         }
         newGrid[row][col]=newWallNode
         setMatrix(newGrid);
-        
     })
 
 
@@ -194,12 +213,20 @@ import {aSearch, getShortestPathAsearch} from '../algo/aSearch';
             setFinishNodeRow(event.target.value);
         }
     })
+
+    const handleMazeCreation =((event)=>{
+       const result= randomizePrim(matrix,matrix[startNodeRow][startNodeCol],matrix[finishNodeRow][finishNodeCol]);
+       setMatrix([])
+       setTimeout(()=>{setMatrix(result)},4);
+    
+    })
     return (
         <>
         <Stack direction="row" spacing={2} pt={1} pl={1}>
+            <Button variant="outlined" onClick={handleMazeCreation}>Create maze</Button>
             <Button variant="outlined" onClick={handleDijkstra} >Dijkstra algo</Button>
             <Button variant="outlined" onClick={handleAsearch}>A* algo</Button>
-            <Button variant="outlined" onClick={handleClearMatrix}>Clear the grid</Button>
+            <Button variant="outlined" onClick={handleClearMatrix}>Reset the grid</Button>
             <Button variant="outlined" onClick={handleClearHalfMatrix}>Clear the animation</Button>
             <TextField id="start-node-col" label={startNodeCol} variant="outlined" onChange={handleStartNodeCol}/>
             <TextField id="start-node-row" label={startNodeRow} variant="outlined" onChange={handleStartNodeRow}/>
