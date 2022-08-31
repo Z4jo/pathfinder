@@ -14,11 +14,7 @@ import {aSearch, getShortestPathAsearch} from '../algo/aSearch';
 
 
 
-//START AND FINISH NODES
-const START_NODE_ROW = 10;
-const START_NODE_COL = 15;
-const FINISH_NODE_ROW = 17;
-const FINISH_NODE_COL = 25;
+
 
  function Pathfinder(){
     const [matrix,setMatrix]=React.useState([]);
